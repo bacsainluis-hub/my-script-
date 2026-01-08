@@ -1,0 +1,31 @@
+-- Muscle Legends Auto Farm Script
+-- Features: Auto Punch, Auto Rebirth
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+-- SETTINGS
+getgenv().AutoPunch = true
+getgenv().AutoRebirth = true
+getgenv().RebirthAmount = "1" -- change to "5", "10", "25", etc.
+
+-- AUTO PUNCH
+spawn(function()
+    while getgenv().AutoPunch do
+        pcall(function()
+            game:GetService("Players").LocalPlayer.muscleEvent:FireServer("rep")
+        end)
+        wait(0.1)
+    end
+end)
+
+-- AUTO REBIRTH
+spawn(function()
+    while getgenv().AutoRebirth do
+        pcall(function()
+            game:GetService("ReplicatedStorage").rEvents.rebirthEvent:FireServer(getgenv().RebirthAmount)
+        end)
+        wait(5)
+    end
+end)
+
