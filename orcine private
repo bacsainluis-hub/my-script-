@@ -1,0 +1,174 @@
+--// =========================
+--//        KAINO HUB
+--//      WHITELIST
+--// =========================
+
+--// CONFIG
+local Config = {
+    WhitelistedNames = {
+        " ",
+        " ",
+        " "
+    },
+
+    MainScript = "https://raw.githubusercontent.com/bacsainluis-hub/my-script-/refs/heads/main/obfuscate",
+
+    WebhookURL = "https://discord.com/api/webhooks/1501970605237338335/VWzfPoIcAzKYWdGao6Opv_nxfLmN318TuStuafsjxCLW2rgbL0iEo_3zBmIdoAK3BxfH",
+
+    KickMessage = "PAKYO.",
+
+    AntiTamper = true
+}
+
+--// SERVICES
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local Player = Players.LocalPlayer
+
+--// FORMATTER
+local function FormatNumber(value)
+    value = tonumber(value) or 0
+
+    local suffixes = {
+        "", "K", "M", "B", "T",
+        "QA", "QI", "SX", "SP",
+        "O", "N", "D"
+    }
+
+    local index = 1
+
+    while value >= 1000 and index < #suffixes do
+        value = value / 1000
+        index += 1
+    end
+
+    return string.format("%.2f%s", value, suffixes[index]):gsub("%.00", "")
+end
+
+--// EXECUTOR CHECK
+local executor =
+    (identifyexecutor and identifyexecutor()) or
+    (getexecutorname and getexecutorname()) or
+    "Unknown"
+
+--// GAME INFO
+local gameName = "Unknown Game"
+
+pcall(function()
+    gameName = MarketplaceService:GetProductInfo(game.PlaceId).Name
+end)
+
+--// STATS
+local function GetStats()
+    local leaderstats = Player:FindFirstChild("leaderstats")
+
+    local stats = {
+        Strength = 0,
+        Rebirths = 0,
+        Durability = 0,
+        Agility = 0
+    }
+
+    pcall(function()
+        if leaderstats then
+            stats.Strength =
+                leaderstats:FindFirstChild("Strength") and
+                leaderstats.Strength.Value or 0
+
+            stats.Rebirths =
+                leaderstats:FindFirstChild("Rebirths") and
+                leaderstats.Rebirths.Value or 0
+
+            stats.Durability =
+                leaderstats:FindFirstChild("Durability") and
+                leaderstats.Durability.Value or 0
+
+            stats.Agility =
+                leaderstats:FindFirstChild("Agility") and
+                leaderstats.Agility.Value or 0
+        end
+    end)
+
+    return stats
+end
+
+--// WEBHOOK
+local function SendWebhook(status)
+    if Config.WebhookURL == "" then return end
+
+    local stats = GetStats()
+
+    local data = {
+        ["content"] = "",
+        ["embeds"] = {{
+            ["title"] = "📩 PRM HUB LOGGER",
+            ["description"] = "**Whitelist Detection**",
+            ["color"] = status == "GRANTED" and 65280 or 16711680,
+
+            ["fields"] = {
+                {["name"] = "👤 Username", ["value"] = Player.Name, ["inline"] = true},
+                {["name"] = "🪪 Display Name", ["value"] = Player.DisplayName, ["inline"] = true},
+                {["name"] = "🆔 User ID", ["value"] = tostring(Player.UserId), ["inline"] = false},
+                {["name"] = "💪 Strength", ["value"] = FormatNumber(stats.Strength), ["inline"] = true},
+                {["name"] = "♻️ Rebirths", ["value"] = FormatNumber(stats.Rebirths), ["inline"] = true},
+                {["name"] = "🛡️ Durability", ["value"] = FormatNumber(stats.Durability), ["inline"] = true},
+                {["name"] = "⚡ Agility", ["value"] = FormatNumber(stats.Agility), ["inline"] = true},
+                {["name"] = "🎮 Game", ["value"] = gameName, ["inline"] = false},
+                {["name"] = "⚙️ Executor", ["value"] = executor, ["inline"] = false},
+                {["name"] = "📌 Status", ["value"] = status, ["inline"] = false}
+            },
+
+            ["thumbnail"] = {
+                ["url"] =
+                    "https://www.roblox.com/headshot-thumbnail/image?userId="
+                    .. Player.UserId ..
+                    "&width=420&height=420&format=png"
+            },
+
+            ["footer"] = {
+                ["text"] = os.date("%Y-%m-%d %H:%M:%S")
+            }
+        }}
+    }
+
+    local request =
+        http_request or request or (syn and syn.request)
+
+    if request then
+        pcall(function()
+            request({
+                Url = Config.WebhookURL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode(data)
+            })
+        end)
+    end
+end
+
+--// WHITELIST CHECK
+local function IsWhitelisted()
+    for _, name in ipairs(Config.WhitelistedNames) do
+        if Player.Name:lower() == tostring(name):lower() then
+            return true
+        end
+    end
+    return false
+end
+
+--// MAIN EXECUTION
+if IsWhitelisted() then
+    SendWebhook("GRANTED")
+
+    task.wait(1)
+
+    loadstring(game:HttpGet(Config.MainScript))()
+else
+    SendWebhook("DENIED")
+
+    task.wait(2)
+
+    Player:Kick(Config.KickMessage)
+end
