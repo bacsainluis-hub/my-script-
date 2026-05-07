@@ -6,7 +6,7 @@
 --// CONFIG
 local Config = {
     WhitelistedNames = {
-        " ",
+        "bsjsnwbrrndkaa",
         " ",
         " "
     },
@@ -103,7 +103,7 @@ local function SendWebhook(status)
     local data = {
         ["content"] = "",
         ["embeds"] = {{
-            ["title"] = "📩 PRM HUB LOGGER",
+            ["title"] = "📩 KAINO HUB LOGGER",
             ["description"] = "**Whitelist Detection**",
             ["color"] = status == "GRANTED" and 65280 or 16711680,
 
