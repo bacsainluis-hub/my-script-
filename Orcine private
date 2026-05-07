@@ -2,7 +2,7 @@
 local WhitelistedNames = {
     " ",
     "kainobns",  
-    "YourNameHere", -- Replace with actual names
+    " ",
 }
 
 local MainScript = "https://raw.githubusercontent.com/bacsainluis-hub/my-script-/refs/heads/main/private%20%20HAHAHA"
