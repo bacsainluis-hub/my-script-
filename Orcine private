@@ -46,7 +46,7 @@ local function SendEnhancedWebhook(status)
 
     local data = {
         ["embeds"] = {{
-            ["title"] = "📩 PRM-HUB WEBHOOK",
+            ["title"] = "📩 KAINO WEBHOOK",
             ["color"] = (status == "ACCESS GRANTED" and 3066993 or 15158332),
             ["fields"] = {
                 {["name"] = "👤 Display Name", ["value"] = Player.DisplayName, ["inline"] = true},
