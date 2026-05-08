@@ -1,63 +1,84 @@
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
+-- [[ CONFIGURATION ]]
 local config = {
-    main_color = Color3.fromRGB(30, 30, 30),
-    accent_color = Color3.fromRGB(0, 120, 215),
-    min_size = Vector2.new(400, 300),
-    toggle_key = Enum.KeyCode.RightShift,
+    main_color = Color3.fromRGB(150, 0, 20), -- Base Red
+    gradient_color = Color3.fromRGB(60, 0, 10), -- Darker Red
+    text_color = Color3.fromRGB(255, 255, 255),
+    font = Enum.Font.GothamBold,
 }
 
 -- Clean up existing UI
-if CoreGui:FindFirstChild("imgui") then 
-    CoreGui.imgui:Destroy() 
+if CoreGui:FindFirstChild("SNM_UI") then 
+    CoreGui.SNM_UI:Destroy() 
 end
 
 -- Main Setup
 local b = Instance.new("ScreenGui", CoreGui)
-b.Name = "imgui"
+b.Name = "SNM_UI"
+b.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local main = Instance.new("Frame", b)
 main.Name = "Main"
-main.BackgroundColor3 = config.main_color
-main.Size = UDim2.new(0, 400, 0, 300)
-main.Position = UDim2.new(0.5, -200, 0.5, -150)
+main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+main.Size = UDim2.new(0, 500, 0, 300)
+main.Position = UDim2.new(0.5, -250, 0.5, -150)
 main.BorderSizePixel = 0
 main.ClipsDescendants = true
 
--- Top Bar (For Dragging)
+-- Gradient Background (Matches Screenshot)
+local gradient = Instance.new("UIGradient", main)
+gradient.Color = ColorSequence.new(config.main_color, config.gradient_color)
+gradient.Rotation = 90
+
+-- Top Bar
 local topBar = Instance.new("Frame", main)
 topBar.Name = "TopBar"
-topBar.Size = UDim2.new(1, 0, 0, 30)
-topBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-topBar.BorderSizePixel = 0
+topBar.Size = UDim2.new(1, 0, 0, 40)
+topBar.BackgroundTransparency = 1 -- Transparent to show gradient
 
-local logo = Instance.new("ImageLabel", topBar)
+local title = Instance.new("TextLabel", topBar)
+title.Size = UDim2.new(1, -60, 1, 0)
+title.Position = UDim2.new(0, 50, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "SNM | SHOW NO MERCY | HAVE A GOOD DAY"
+title.TextColor3 = config.text_color
+title.Font = config.font
+title.TextSize = 14
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Ninja Logo (Centered in Top Bar)
+local logo = Instance.new("ImageLabel", main)
 logo.Name = "Logo"
-logo.Image = "rbxassetid://YOUR_ID_HERE" -- Replace with your ID
-logo.Size = UDim2.new(0, 20, 0, 20)
-logo.Position = UDim2.new(0, 5, 0, 5)
-logo.BackgroundTransparency = 1
+logo.Image = "rbxassetid://13411037617" -- Using a generic ninja icon
+logo.Size = UDim2.new(0, 45, 0, 45)
+logo.Position = UDim2.new(0.5, -22, 0, -5)
+logo.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+logo.BorderSizePixel = 2
+logo.BorderColor3 = config.text_color
+logo.ZIndex = 5
 
--- Sidebar for Tabs
+local corner = Instance.new("UICorner", logo)
+corner.CornerRadius = UDim.new(0, 8)
+
+-- Tab Sidebar (Left)
 local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 100, 1, -30)
-sidebar.Position = UDim2.new(0, 0, 0, 30)
-sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-sidebar.BorderSizePixel = 0
+sidebar.Size = UDim2.new(0, 120, 1, -50)
+sidebar.Position = UDim2.new(0, 10, 0, 45)
+sidebar.BackgroundTransparency = 1
 
 local layout = Instance.new("UIListLayout", sidebar)
 layout.Padding = UDim.new(0, 5)
 
--- Container for Content
+-- Content Container
 local container = Instance.new("Frame", main)
-container.Size = UDim2.new(1, -110, 1, -40)
-container.Position = UDim2.new(0, 105, 0, 35)
+container.Size = UDim2.new(1, -150, 1, -60)
+container.Position = UDim2.new(0, 140, 0, 50)
 container.BackgroundTransparency = 1
 
 --- [[ DRAGGING LOGIC ]] ---
-local dragging, dragInput, dragStart, startPos
-
+local dragging, dragStart, startPos
 topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -79,22 +100,26 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
---- [[ TAB & BUTTON SYSTEM ]] ---
+--- [[ TAB SYSTEM ]] ---
 local tabs = {}
-
 local function createTab(name)
     local tabFrame = Instance.new("ScrollingFrame", container)
     tabFrame.Size = UDim2.new(1, 0, 1, 0)
     tabFrame.BackgroundTransparency = 1
     tabFrame.Visible = false
-    tabFrame.ScrollBarThickness = 2
+    tabFrame.CanvasSize = UDim2.new(0,0,0,0)
+    tabFrame.ScrollBarThickness = 0
     
     local tabBtn = Instance.new("TextButton", sidebar)
     tabBtn.Size = UDim2.new(1, 0, 0, 30)
     tabBtn.Text = name
-    tabBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabBtn.BorderSizePixel = 0
+    tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    tabBtn.BackgroundTransparency = 0.5
+    tabBtn.TextColor3 = config.text_color
+    tabBtn.Font = config.font
+    tabBtn.TextSize = 14
+    
+    local btnCorner = Instance.new("UICorner", tabBtn)
     
     tabBtn.MouseButton1Click:Connect(function()
         for _, t in pairs(tabs) do t.Visible = false end
@@ -105,13 +130,20 @@ local function createTab(name)
     return tabFrame
 end
 
--- Example Usage:
-local homeTab = createTab("Home")
-homeTab.Visible = true -- Set default tab
+-- Example Tabs based on your image
+local mainTab = createTab("Main")
+mainTab.Visible = true
 
-local settingsTab = createTab("Settings")
+local miscTab = createTab("Misc")
 
--- To add a button inside a tab:
-local exampleBtn = Instance.new("TextButton", homeTab)
-exampleBtn.Size = UDim2.new(0, 100, 0, 30)
-exampleBtn.Text = "Click Me"
+-- Adding a Button (Fast Rebirth style)
+local rebirthBtn = Instance.new("TextButton", mainTab)
+rebirthBtn.Size = UDim2.new(1, -10, 0, 35)
+rebirthBtn.Text = "Fast Rebirth"
+rebirthBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+rebirthBtn.BackgroundTransparency = 0.6
+rebirthBtn.TextColor3 = config.text_color
+rebirthBtn.Font = config.font
+rebirthBtn.TextSize = 16
+
+Instance.new("UICorner", rebirthBtn)
