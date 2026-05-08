@@ -1,67 +1,117 @@
-local a={main_color=Color3.fromRGB(0,0,0),min_size=Vector2.new(400,300),toggle_key=Enum.KeyCode.RightShift,can_resize=true}
-do 
-    local b=game:GetService("CoreGui"):FindFirstChild("imgui")
-    if b then b:Destroy() end 
-end;
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
 
-local b=Instance.new("ScreenGui")
-local c=Instance.new("Frame")
-local d=Instance.new("TextLabel")
-local e=Instance.new("ImageLabel")
+local config = {
+    main_color = Color3.fromRGB(30, 30, 30),
+    accent_color = Color3.fromRGB(0, 120, 215),
+    min_size = Vector2.new(400, 300),
+    toggle_key = Enum.KeyCode.RightShift,
+}
 
--- [[ IMAGE CONFIGURATION ]]
--- Replace the link below with your actual GitHub Raw link
-e.Image = "https://raw.githubusercontent.com/GITHUB_RAW_URL_HERE"
-e.ScaleType = Enum.ScaleType.Fit
--- [[ END IMAGE CONFIGURATION ]]
+-- Clean up existing UI
+if CoreGui:FindFirstChild("imgui") then 
+    CoreGui.imgui:Destroy() 
+end
 
-local f=Instance.new("Frame")
-local g=Instance.new("Frame")
-local h=Instance.new("ImageButton")
-local i=Instance.new("ImageLabel")
-local j=Instance.new("ImageLabel")
-local k=Instance.new("Frame")
-local l=Instance.new("TextLabel")
-local m=Instance.new("ImageLabel")
-local n=Instance.new("ScrollingFrame")
-local o=Instance.new("Frame")
-local p=Instance.new("UIListLayout")
-local q=Instance.new("Frame")
-local r=Instance.new("Frame")
-local s=Instance.new("UIListLayout")
-local t=Instance.new("TextBox")
-local u=Instance.new("ImageLabel")
-local v=Instance.new("ImageLabel")
-local w=Instance.new("TextLabel")
-local x=Instance.new("ImageLabel")
-local y=Instance.new("TextLabel")
-local z=Instance.new("TextLabel")
-local A=Instance.new("TextLabel")
-local B=Instance.new("ImageLabel")
-local C=Instance.new("UIListLayout")
-local D=Instance.new("TextButton")
-local E=Instance.new("ImageLabel")
-local F=Instance.new("ImageLabel")
-
+-- Main Setup
+local b = Instance.new("ScreenGui", CoreGui)
 b.Name = "imgui"
-b.Parent = game:GetService("CoreGui")
-b.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-c.Name = "Main"
-c.Parent = b
-c.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-c.BorderSizePixel = 0
-c.Position = UDim2.new(0.5, -200, 0.5, -150)
-c.Size = UDim2.new(0, 400, 0, 300)
-c.ClipsDescendants = true
+local main = Instance.new("Frame", b)
+main.Name = "Main"
+main.BackgroundColor3 = config.main_color
+main.Size = UDim2.new(0, 400, 0, 300)
+main.Position = UDim2.new(0.5, -200, 0.5, -150)
+main.BorderSizePixel = 0
+main.ClipsDescendants = true
 
-e.Name = "Logo"
-e.Parent = c
-e.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-e.BackgroundTransparency = 1.000
-e.Position = UDim2.new(0, 5, 0, 5)
-e.Size = UDim2.new(0, 20, 0, 20)
+-- Top Bar (For Dragging)
+local topBar = Instance.new("Frame", main)
+topBar.Name = "TopBar"
+topBar.Size = UDim2.new(1, 0, 0, 30)
+topBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+topBar.BorderSizePixel = 0
 
--- Note: The rest of your script logic for folders, buttons, and 
--- functionality (the minified content from raw (3).txt) should 
--- follow here to ensure the library remains fully functional.
+local logo = Instance.new("ImageLabel", topBar)
+logo.Name = "Logo"
+logo.Image = "rbxassetid://YOUR_ID_HERE" -- Replace with your ID
+logo.Size = UDim2.new(0, 20, 0, 20)
+logo.Position = UDim2.new(0, 5, 0, 5)
+logo.BackgroundTransparency = 1
+
+-- Sidebar for Tabs
+local sidebar = Instance.new("Frame", main)
+sidebar.Size = UDim2.new(0, 100, 1, -30)
+sidebar.Position = UDim2.new(0, 0, 0, 30)
+sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+sidebar.BorderSizePixel = 0
+
+local layout = Instance.new("UIListLayout", sidebar)
+layout.Padding = UDim.new(0, 5)
+
+-- Container for Content
+local container = Instance.new("Frame", main)
+container.Size = UDim2.new(1, -110, 1, -40)
+container.Position = UDim2.new(0, 105, 0, 35)
+container.BackgroundTransparency = 1
+
+--- [[ DRAGGING LOGIC ]] ---
+local dragging, dragInput, dragStart, startPos
+
+topBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+--- [[ TAB & BUTTON SYSTEM ]] ---
+local tabs = {}
+
+local function createTab(name)
+    local tabFrame = Instance.new("ScrollingFrame", container)
+    tabFrame.Size = UDim2.new(1, 0, 1, 0)
+    tabFrame.BackgroundTransparency = 1
+    tabFrame.Visible = false
+    tabFrame.ScrollBarThickness = 2
+    
+    local tabBtn = Instance.new("TextButton", sidebar)
+    tabBtn.Size = UDim2.new(1, 0, 0, 30)
+    tabBtn.Text = name
+    tabBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tabBtn.BorderSizePixel = 0
+    
+    tabBtn.MouseButton1Click:Connect(function()
+        for _, t in pairs(tabs) do t.Visible = false end
+        tabFrame.Visible = true
+    end)
+    
+    tabs[name] = tabFrame
+    return tabFrame
+end
+
+-- Example Usage:
+local homeTab = createTab("Home")
+homeTab.Visible = true -- Set default tab
+
+local settingsTab = createTab("Settings")
+
+-- To add a button inside a tab:
+local exampleBtn = Instance.new("TextButton", homeTab)
+exampleBtn.Size = UDim2.new(0, 100, 0, 30)
+exampleBtn.Text = "Click Me"
