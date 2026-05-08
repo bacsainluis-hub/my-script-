@@ -1,0 +1,67 @@
+local a={main_color=Color3.fromRGB(0,0,0),min_size=Vector2.new(400,300),toggle_key=Enum.KeyCode.RightShift,can_resize=true}
+do 
+    local b=game:GetService("CoreGui"):FindFirstChild("imgui")
+    if b then b:Destroy() end 
+end;
+
+local b=Instance.new("ScreenGui")
+local c=Instance.new("Frame")
+local d=Instance.new("TextLabel")
+local e=Instance.new("ImageLabel")
+
+-- [[ IMAGE CONFIGURATION ]]
+-- Replace the link below with your actual GitHub Raw link
+e.Image = "https://raw.githubusercontent.com/GITHUB_RAW_URL_HERE"
+e.ScaleType = Enum.ScaleType.Fit
+-- [[ END IMAGE CONFIGURATION ]]
+
+local f=Instance.new("Frame")
+local g=Instance.new("Frame")
+local h=Instance.new("ImageButton")
+local i=Instance.new("ImageLabel")
+local j=Instance.new("ImageLabel")
+local k=Instance.new("Frame")
+local l=Instance.new("TextLabel")
+local m=Instance.new("ImageLabel")
+local n=Instance.new("ScrollingFrame")
+local o=Instance.new("Frame")
+local p=Instance.new("UIListLayout")
+local q=Instance.new("Frame")
+local r=Instance.new("Frame")
+local s=Instance.new("UIListLayout")
+local t=Instance.new("TextBox")
+local u=Instance.new("ImageLabel")
+local v=Instance.new("ImageLabel")
+local w=Instance.new("TextLabel")
+local x=Instance.new("ImageLabel")
+local y=Instance.new("TextLabel")
+local z=Instance.new("TextLabel")
+local A=Instance.new("TextLabel")
+local B=Instance.new("ImageLabel")
+local C=Instance.new("UIListLayout")
+local D=Instance.new("TextButton")
+local E=Instance.new("ImageLabel")
+local F=Instance.new("ImageLabel")
+
+b.Name = "imgui"
+b.Parent = game:GetService("CoreGui")
+b.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+c.Name = "Main"
+c.Parent = b
+c.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+c.BorderSizePixel = 0
+c.Position = UDim2.new(0.5, -200, 0.5, -150)
+c.Size = UDim2.new(0, 400, 0, 300)
+c.ClipsDescendants = true
+
+e.Name = "Logo"
+e.Parent = c
+e.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+e.BackgroundTransparency = 1.000
+e.Position = UDim2.new(0, 5, 0, 5)
+e.Size = UDim2.new(0, 20, 0, 20)
+
+-- Note: The rest of your script logic for folders, buttons, and 
+-- functionality (the minified content from raw (3).txt) should 
+-- follow here to ensure the library remains fully functional.
